@@ -1,5 +1,4 @@
-# python_labs/src/lab01/demo.py
-
+# python_labs02/src/lab01/demo.py
 from model import Bus
 
 def main():
