@@ -5,6 +5,14 @@ from typing import List, Dict, Any
 # импортируем классы
 from models import Bus, CityBus, IntercityBus
 
+
+
+# Находим папку, в которой лежит этот файл (storage.py)
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# Формируем путь к файлу buses.json в этой же папке
+DEFAULT_FILEPATH = os.path.join(CURRENT_DIR, "buses.json")
+
+
 def save(buses: List[Bus], filepath: str) -> None:
     """сохраняет список автобусов в JSON файл."""
     data = []

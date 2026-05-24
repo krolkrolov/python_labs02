@@ -75,6 +75,8 @@ python main.py
 
 ![alt text](../../images/lab07/error2.png)
 
+![alt text](../../images/lab07/sort2.png)
+
 ---
 
 ## 5. Дополнительное задание (Запись CLI)
