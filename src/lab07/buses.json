@@ -1,0 +1,26 @@
+[
+    {
+        "type": "CityBus",
+        "route_number": "67",
+        "capacity": 45,
+        "has_wifi": false,
+        "standing_places": 15,
+        "base_fare": 60.0
+    },
+    {
+        "type": "IntercityBus",
+        "route_number": "a223",
+        "capacity": 60,
+        "distance": 250.0,
+        "has_ac": true,
+        "price_per_km": 5.2
+    },
+    {
+        "type": "CityBus",
+        "route_number": "m77",
+        "capacity": 20,
+        "has_wifi": true,
+        "standing_places": 20,
+        "base_fare": 55.0
+    }
+]
