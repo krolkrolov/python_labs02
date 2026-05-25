@@ -1,13 +1,5 @@
 [
     {
-        "type": "CityBus",
-        "route_number": "67",
-        "capacity": 45,
-        "has_wifi": false,
-        "standing_places": 15,
-        "base_fare": 60.0
-    },
-    {
         "type": "IntercityBus",
         "route_number": "a223",
         "capacity": 60,
@@ -22,5 +14,37 @@
         "has_wifi": true,
         "standing_places": 20,
         "base_fare": 55.0
+    },
+    {
+        "type": "CityBus",
+        "route_number": "34",
+        "capacity": 66,
+        "has_wifi": false,
+        "standing_places": 12,
+        "base_fare": 67.0
+    },
+    {
+        "type": "IntercityBus",
+        "route_number": "3453",
+        "capacity": 40,
+        "distance": 300.0,
+        "has_ac": false,
+        "price_per_km": 4.0
+    },
+    {
+        "type": "CityBus",
+        "route_number": "423",
+        "capacity": 34,
+        "has_wifi": true,
+        "standing_places": 67,
+        "base_fare": 56.0
+    },
+    {
+        "type": "CityBus",
+        "route_number": "67",
+        "capacity": 56,
+        "has_wifi": true,
+        "standing_places": 67,
+        "base_fare": 78.0
     }
 ]

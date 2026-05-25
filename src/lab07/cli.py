@@ -1,7 +1,6 @@
-#модуль консольного интерфейса CLI, отвечает за ввод и вывод данных.
+# Модуль консольного интерфейса CLI, отвечает за ввод и вывод данных.
 
 import os
-
 from app import BusParkApp
 from models import CityBus, IntercityBus
 from exceptions import ItemNotFoundError, DuplicateItemError
@@ -9,12 +8,11 @@ from exceptions import ItemNotFoundError, DuplicateItemError
 class BusConsoleApp:
 
     def _clear_screen(self) -> None:
-        """Очищает экран терминала."""
-        # для винды это 'cls', для calla - 'clear'
+        """очищает экран терминала"""
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def _ask_yes_no(self, question: str) -> bool:
-        """Вспомогательный метод для получения четкого ответа y/n."""
+        """вспомогательный метод для получения четкого ответа y/n"""
         attempts = 0
         while True:
             ans = input(f"{question} (y/n): ").strip().lower()
@@ -34,7 +32,6 @@ class BusConsoleApp:
 
     def _print_menu(self) -> None:
         """печать главного меню."""
-
         print("\n--- УПРАВЛЕНИЕ АВТОБУСНЫМ ПАРКОМ ---")
         print("1. Показать все автобусы")
         print("2. Добавить городской автобус")
@@ -45,16 +42,13 @@ class BusConsoleApp:
         print("7. Удалить автобус")
         print("0. Сохранить и выйти")
 
-
-
     def _show_buses(self, buses=None) -> None:
-        """выводит список автобусов и ждет нажатия ентер перед возвратом в меню."""
+        """выводит список автобусов и ждет нажатия Enter перед возвратом в меню"""
         target_list = buses if buses is not None else self.app.get_all()
         
         if not target_list:
             print("\n[!] Список пуст.")
         else:
-            # Шапка таблицы
             print("\n{:<10} | {:<12} | {:<6} | {:<12} | {:<15} | {:<20}".format(
                 "Маршрут", "Тип", "Мест", "Доп. инфо", "Стоимость", "Особенности"
             ))
@@ -63,7 +57,6 @@ class BusConsoleApp:
             for b in target_list:
                 b_type = "City" if isinstance(b, CityBus) else "Intercity"
 
-                # формирование колонки "Доп. инфо"
                 if isinstance(b, CityBus):
                     extra_info = f"Ст.мест: {b.standing_places}"
                 elif isinstance(b, IntercityBus):
@@ -71,7 +64,6 @@ class BusConsoleApp:
                 else:
                     extra_info = "-"
                 
-                # расчет стоимости (из ЛР6)
                 fare = f"{b.calculate_fare():.2f} руб."
 
                 print("{:<10} | {:<12} | {:<6} | {:<12} | {:<15} | {:<20}".format(
@@ -84,7 +76,7 @@ class BusConsoleApp:
     def run(self) -> None:
         """основной цикл работы CLI."""
         while True:
-            self._clear_screen() # очистка всего старое барахла перед показом меню
+            self._clear_screen()
             self._print_menu()
             try:
                 choice = input("\nВыберите пункт: ")
@@ -114,7 +106,7 @@ class BusConsoleApp:
                     break
                 else:
                     print("Ошибка: неверный пункт меню.")
-                    input("Нажмите Enter, чтобы продолжить...") # пауза, чтобы успеть прочитать ошибку
+                    input("Нажмите Enter, чтобы продолжить...")
             except Exception as e:
                 print(f"Критическая ошибка: {e}")
                 input("Нажмите Enter для продолжения...")
@@ -127,16 +119,18 @@ class BusConsoleApp:
             stands = int(input("Кол-во стоячих мест: "))
             fare = float(input("Введите стоимость билета (руб): "))
             
-            new_bus = CityBus(route, cap, wifi, stands, fare)
-            self.app.add_bus(new_bus)
+            self.app.add_city_bus(route, cap, wifi, stands, fare)
+            
             print("[+] Городской автобус успешно добавлен.")
             input("\nНажмите Enter...")
-        except ValueError:
-            print("\n[!] Ошибка: Ну сказано же - ВВЕДИТЕ ЧИСЛО!")
-            print("Попробуем заново))")
+        except ValueError as e:
+            if "invalid literal" in str(e) or "could not convert" in str(e):
+                print("\n[!] Ошибка: Ну сказано же - ВВЕДИТЕ ЧИСЛО!")
+            else:
+                print(f"\n[!] Ошибка: {e}")
             input("\nНажмите Enter...")
         except DuplicateItemError as e:
-            print(f"Ошибка: {e}")
+            print(f"\nОшибка: {e}")
             input("\nНажмите Enter...")
 
     def _add_intercity_bus_ui(self) -> None:
@@ -147,22 +141,24 @@ class BusConsoleApp:
             ac = self._ask_yes_no("Есть кондиционер?")
             rate = float(input("Введите тариф (руб/км): "))
             
-            new_bus = IntercityBus(route, cap, dist, ac, rate)
-            self.app.add_bus(new_bus)
+            self.app.add_intercity_bus(route, cap, dist, ac, rate)
+            
             print("[+] Междугородний автобус успешно добавлен.")
             input("\nНажмите Enter...")
-        except ValueError:
-            print("Ошибка -_-: некорректный ввод чисел.")
+        except ValueError as e:
+            if "invalid literal" in str(e) or "could not convert" in str(e):
+                print("\n[!] Ошибка -_-: некорректный ввод чисел.")
+            else:
+                print(f"\n[!] Ошибка: {e}")
             input("\nНажмите Enter...")
         except DuplicateItemError as e:
-            print(f"Ошибка: {e}")
+            print(f"\nОшибка: {e}")
             input("\nНажмите Enter...")
 
     def _find_bus_ui(self) -> None:
         route = input("Введите маршрут для поиска: ")
         bus = self.app.find_bus(route)
         if bus:
-            # передача ОДНОГО найденного автобуса в красивый метод
             self._show_buses([bus]) 
         else:
             print("[!] Автобус не найден.")
@@ -171,49 +167,45 @@ class BusConsoleApp:
     def _filter_ui(self) -> None:
         try:
             min_cap = int(input("Показать автобусы с вместимостью от: "))
-            
-            if min_cap <= 0:
-                print("\n[?] Автобус с нулевой вместимостью? не-не")
-                input("\nНажмите Enter, чтобы вернуться в реальный мир...")
-                return
-                
             filtered = self.app.filter_by_capacity(min_cap)
             self._show_buses(filtered) 
-        except ValueError:
-            print("Ошибка: введите целое число.")
+        except ValueError as e:
+            if "invalid literal" in str(e):
+                print("Ошибка: введите целое число.")
+            else:
+                # cюда прилетит ошибка из апликации, если ввели <= 0
+                print(f"\n[?] {e}")
+                input("\nНажмите Enter, чтобы вернуться в реальный мир...")
 
     def _sort_ui(self) -> None:
         print("\nСортировать по: 1-Маршруту, 2-Местам, 3-Цене")
         try:
             strategy = int(input("Ваш выбор: "))
             sorted_list = self.app.sort_buses(strategy)
-            # передаем отсортированный список в метод вывода
             self._show_buses(sorted_list)
-        except ValueError:
-            print("Ошибка: введите число.")
+        except ValueError as e:
+             if "invalid literal" in str(e):
+                print("Ошибка: введите число.")
+             else:
+                print(f"Ошибка: {e}")
+             input("\nНажмите Enter...")
 
     def _remove_bus_ui(self) -> None:
         route = input("Введите маршрут для удаления: ")
 
-        if route.lower() in ["скибиди", "сигма", "черемша"]:
-            print("\n[!] Критическая ошибка: Обнаружен запредельный уровень кринжа. Удаление заблокировано РНК.")
-            input("\nНажмите Enter для очистки кармы...")
+        # логика UI: спросить подтверждение
+        if not self._ask_yes_no(f"Вы уверены, что хотите удалить маршрут {route}?"):
+            print("[*] Удаление отменено.")
+            input("\nНажмите Enter...")
             return
 
-        # запуск бесконечного цикла, пока пользователь не введет корректный символ
-        while True:
-            confirm = input(f"Вы уверены, что хотите удалить маршрут {route}? (y/n): ").strip().lower()
-            if confirm == 'y':
-                try:
-                    self.app.remove_bus(route)
-                    print(f"[x] Маршрут {route} удален.")
-                    break # выход из цикла, тк действие выполнено
-                except ItemNotFoundError as e:
-                    print(f"Ошибка: {e}")
-                    break # выход из цикла, тк объекта и так нет
-            elif confirm == 'n':
-                print("[*] Удаление отменено.")
-                break # выход из цикла, отменив операцию
-            else:
-                # если введено чёто другое - ггворим что пользователь геншин импактер, цикл идет на следующий круг
-                print("Ошибка: некорректный ввод. Пожалуйста, введите только 'y' (да) или 'n' (нет).")
+        try:
+            self.app.remove_bus(route)
+            print(f"[x] Маршрут {route} удален.")
+            input("\nНажмите Enter...")
+        except ValueError as e:
+            print(f"\n[!] Критическая ошибка: {e}")
+            input("\nНажмите Enter для очистки кармы...")
+        except ItemNotFoundError as e:
+            print(f"Ошибка: {e}")
+            input("\nНажмите Enter...")
